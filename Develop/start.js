@@ -20,9 +20,9 @@ const menu = () => {
             "View Employees",
             "View Departments",
             "View Roles",
-            // "Add Employees",
-            "Add Departments",
-            "Add Roles",
+            "Add Employee",
+            "Add Department",
+            "Add Role",
             // "Update Employee Roles",
             "EXIT", 
         ],
@@ -37,14 +37,14 @@ const menu = () => {
             case "View Roles":
                 viewRoles();
                 break;
-            // case "Add Employees":
-            //     addEmployees();
-            //     break;
-            case "Add Departments":
+            case "Add Employee":
+                addEmployee();
+                break;
+            case "Add Department":
                 addDepartment();
                 break;
-            case "Add Roles":
-                addRoles();
+            case "Add Role":
+                addRole();
                 break;
             // case "Update Empoyee Roles":
             //     updateEmployeeRoles();
@@ -104,7 +104,7 @@ const addDepartment = () => {
     });
 };
 
-const addRoles = () => {
+const addRole = () => {
     const query = "SELECT name FROM department";
     connection.query(query, (err, data) => {
         if (err) throw err;
@@ -148,41 +148,70 @@ const addRoles = () => {
     });
 };
 
-// const addEmployees = () => {
-//     console.log("I'm in the add Employee function!");
-//     inquirer.prompt([
-//         {
-//             name: "first_name",
-//             type: "input",
-//             message: "What is the first name of the employee you would like to add?",
-//         },
-//         {
-//             name: "last_name",
-//             type: "input",
-//             message: "What is the last name of the employee you would like to add?",
-//         },
-//         {
-//             name: "employeeRole",
-//             type: "list",
-//             message: "What is the employee's role?",
-//             choices () {
-//                 const choiceArray = [];
-//                 data.forEac
-//             }
-//         },
-//         {
-//             name: "salary",
-//             type: "input",
-//             message: `What is the salary for ${title}?`,
-//         },
-//     ])
-//     .then(({title, department_id, id, salary}) => {
-//         connection.query("INSERT INTO role SET ?", {id, title, salary, department_id}, (err) => {
-//             if (err) throw err;
-//             menu();
-//         });
-//     });
-// };
+const addEmployee = () => {
+    console.log("I'm in the add Employee function!");
+    const query = "SELECT CONCAT(e.first_name, ' ', e.last_name) AS manager, e.id AS managerId, role.title AS role_title, role.id AS roleId FROM employee e JOIN role ON e.id = role.id";
+    connection.query(query, (err, data) => {
+        if (err) throw err;
+        inquirer.prompt([
+            {
+                name: "first_name",
+                type: "input",
+                message: "What is the first name of the employee you would like to add?",
+            },
+            {
+                name: "last_name",
+                type: "input",
+                message: "What is the last name of the employee you would like to add?",
+            },
+            {
+                name: "title",
+                type: "list",
+                message: "What is the employee's role?",
+                choices () {
+                    const choiceArray = [];
+                    data.forEach(({ role_title }) => {
+                        choiceArray.push(role_title);
+                    });
+                    return choiceArray;
+                },
+            },
+            {
+                name: "managerName",
+                type: "list",
+                message: "Who is the employee's manager?",
+                choices () {
+                    const choiceArray = [];
+                    // Add NONE option for manager with null value
+                    data.forEach(({ manager }) => {
+                        choiceArray.push(manager);
+                    });
+                    return choiceArray;
+                },
+            },
+        ])
+        .then(({first_name, last_name, title, managerName}) => {
+            let manager_id;
+            let role_id;
+            data.forEach(entry => {
+                if (entry.manager === managerName) {
+                    manager_id = entry.managerId;
+                }
+
+                if (entry.role_title === title) {
+                    role_id = entry.roleId;
+                }
+            })
+            console.log(`The manager ID for ${managerName} is ${manager_id}`);
+            console.log(`The role ID for ${title} is ${role_id}`);
+            const query = "INSERT INTO employee SET ?";
+            connection.query(query, {first_name, last_name, role_id, manager_id}, (err) => {
+                if (err) throw err;
+                menu();
+            });
+        });
+    })
+};
 
 // const validateDepartment = (name) => {
 //     const query = "SELECT name FROM department";
