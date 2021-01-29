@@ -18,7 +18,7 @@ const menu = () => {
     inquirer.prompt({
         name: "request",
         type: "list",
-        message: "What would you like to do?",
+        message: `What would you like to do?`,
         choices: [
             "View Employees",
             "View Departments",
@@ -26,8 +26,8 @@ const menu = () => {
             "Add Employee",
             "Add Department",
             "Add Role",
-            // "Update Employee Roles",
-            "EXIT", 
+            "Update Employee Role",
+            `EXIT \n`, 
         ],
     }).then((answer) => {
         // Creating switch cases for list actions in menu function to call corresponding function
@@ -50,12 +50,12 @@ const menu = () => {
             case "Add Role":
                 addRole();
                 break;
-            // case "Update Empoyee Roles":
-            //     updateEmployeeRoles();
-                // break;
+            case "Update Employee Role":
+                updateEmployeeRole();
+                break;
             case "EXIT":
-                process.exit();
-        }
+                process.abort();
+        };
     });
 };
 
@@ -75,7 +75,7 @@ const viewDepartments = () => {
     connection.query(query, (err, data) => {
         if (err) throw err;
         console.table(data); // Displaying all departments in database
-        menu(); // Calling menu function
+        menu(); // Calling main menu function
     });
 };
 
@@ -85,7 +85,7 @@ const viewRoles = () => {
     connection.query(query, (err, data) => {
         if (err) throw err;
         console.table(data); // Displaying all roles in database
-        menu(); // Calling menu function
+        menu(); // Calling main menu function
     });
 };
 
@@ -105,7 +105,7 @@ const addDepartment = () => {
         connection.query(query, {name}, (err) => {
             if (err) throw err;
             console.log(`${name} department successfully added!`);
-            menu(); // Calling menu
+            menu(); // Calling main menu
         });
     });
 };
@@ -153,7 +153,7 @@ const addRole = () => {
             connection.query(query, {title, salary, department_id}, (err) => {
                 console.log(`${title} Role successfully added!`);
                 if (err) throw err;
-                menu(); // Calling menu
+                menu(); // Calling main menu
             });
         });
     });
@@ -226,10 +226,71 @@ const addEmployee = () => {
             connection.query(query, {first_name, last_name, role_id, manager_id}, (err) => {
                 if (err) throw err;
                 console.log(`${first_name} ${last_name} successfully added as employee!`);
-                menu(); // Calling menu
+                menu(); // Calling main menu
             });
         });
-    })
+    });
+};
+
+// Function to update employee role in database
+const updateEmployeeRole = () => {
+    // Query to select all employees, roles and id's for both in database
+    const query = "SELECT CONCAT(e.first_name, ' ', e.last_name) as employee_name, e.id AS employeeId, role.title AS role_title, role.id AS roleId FROM employee e LEFT JOIN role on e.id = role.id"
+    connection.query(query, (err, data) => {
+        if (err) throw err;
+        inquirer.prompt([
+            {
+                name: "employeeName",
+                type: 'list',
+                message: "Which employee's role would you like to update?",
+                choices () {
+                    // Creating array to display all employee options from database
+                    const choiceArray = [];
+                    data.forEach(({ employee_name }) => {
+                        choiceArray.push(employee_name);
+                    });
+                    // Removing any null values for employee_name in database
+                    const filtered = choiceArray.filter(Boolean);
+                    return filtered;
+                }
+            },
+            {
+                name: "updatedRole",
+                type: 'list',
+                message: "What is the employees new role?",
+                choices() {
+                    // Creating array to display all roles in databse from which to choose
+                    const choiceArray = [];
+                    data.forEach(({ role_title }) => {
+                        choiceArray.push(role_title);
+                    });
+                    // Removing any null values for role_title in database
+                    const filtered = choiceArray.filter(Boolean);
+                    return filtered;
+                },
+            },
+        ]).then(({ employeeName, updatedRole}) => {
+            let employeeId;
+            let roleId;
+            data.forEach(entry => {
+                // For each entry if employee selected from list matches employee from database
+                if (entry.employee_name === employeeName) {
+                    employeeId = entry.employeeId; // Set employeeId equal to employee id in database
+                }
+                // For each entry if updated role selected from list matches role from database
+                if (entry.role_title === updatedRole) {
+                    roleId = entry.roleId; // Set roleId equl to role id in database
+                }
+            });
+            // Query to update employee role with user selection
+            const query = "UPDATE employee SET role_id = ? WHERE `id` = ?";
+            connection.query(query, [roleId, employeeId], (err) => {
+              if (err) throw err;
+              console.log(`Role for ${employeeName} has successfully been updated to ${updatedRole}`);
+              menu();  // Calling main menu
+            })
+        });
+    });
 };
 
 // const validateDepartment = (name) => {
