@@ -13,7 +13,7 @@ Create a Content Management System (CMS) for managing a company's employees usin
 * [Tools Implemented](#tools-implemented)
 * [Installation](#installation)
 * [Challenges](#challenges)
-* [Addiitional Resources](#additional-resources)
+* [Additional Resources](#additional-resources)
 
 ## User Story and Criteria
 
@@ -41,6 +41,8 @@ THEN I am presented with a list of current roles
 
 ## Video Walkthrough
 
+[Click]() to see a video demonstrationg the functionality of the CMS application.
+
 ## Tools Implemented
 
 * JavaScript
@@ -48,14 +50,11 @@ THEN I am presented with a list of current roles
 * Inqurier
 * MySQL
 * `consle.table`
+* `ASCII-art Logo`
 
 ## Installation
 
-`npm install inquirer mysql console.table`
-
-## Challenges
-
-[Click]() to see a video demonstrationg the functionality of the CMS application.
+`npm install inquirer mysql console.table asciiart-logo`
 
 ## Additional Resources
 
