@@ -6,12 +6,21 @@ const inquirer = require("inquirer");
 const consoleTable = require("console.table");
 const { query } = require("./connection");
 const db = require("./queries");
+const logo = require('asciiart-logo');
+const config = require('./package.json');
 
 // Connecting to database Starting Menu
 connection.connect((err) => {
     if (err) throw err;
+    console.log(logo({
+        name: "Employee Manager",
+        font: "Colossal",
+        logoColor: "bold-white",
+    })
+    .render());
     menu(); // Calling menu function
 });
+
 
 // Menu Function - Providing list of actions & asking what user would like to do
 const menu = () => {
@@ -53,8 +62,8 @@ const menu = () => {
             case "Update Employee Role":
                 updateEmployeeRole();
                 break;
-            case "EXIT":
-                process.abort();
+            case "EXIT \n":
+                process.exit();
         };
     });
 };
@@ -151,7 +160,7 @@ const addRole = () => {
             // Inserting new role/title with salary and department id into database
             const query = "INSERT INTO role SET ?";
             connection.query(query, {title, salary, department_id}, (err) => {
-                console.log(`${title} Role successfully added!`);
+                console.log(`${title} role successfully added!`);
                 if (err) throw err;
                 menu(); // Calling main menu
             });
