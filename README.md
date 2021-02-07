@@ -41,7 +41,7 @@ THEN I am presented with a list of current roles
 
 ## Video Walkthrough
 
-[Click]() to see a video demonstrationg the functionality of the CMS application.
+[Click](https://drive.google.com/file/d/1QF0uVy49M06UWILa5vYRsnfwy0gYv-YD/view?usp=sharing) to see a video demonstrationg the functionality of the CMS application.
 
 ## Tools Implemented
 
@@ -61,3 +61,4 @@ THEN I am presented with a list of current roles
 * [MySQL Combine Two Columns Into One Column](https://stackoverflow.com/questions/22739841/mysql-combine-two-columns-into-one-column/22739860)
 * [SQL Server Self Join](https://www.sqlservertutorial.net/sql-server-basics/sql-server-self-join/)
 * [Remove Empty Array Elements](https://stackoverflow.com/questions/281264/remove-empty-elements-from-an-array-in-javascript#:~:text=For%20example%2C%20if%20you%20want,null%3B%20%7D)
+* [How to Join Two Tables and Return All Rows in Both](https://stackoverflow.com/questions/27685001/how-to-join-two-tables-and-return-all-rows-from-both-tables)
