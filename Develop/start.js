@@ -164,7 +164,7 @@ const addRole = () => {
             // Inserting new role/title with salary and department id into database
             const query = "INSERT INTO role SET ?";
             const testing = connection.query(query, {title, salary, department_id}, (err) => {
-                console.log(`${testing.sql}`);
+                // console.log(`${testing.sql}`);
                 console.log(`${title} role successfully added!`);
                 if (err) throw err;
                 menu(); // Calling main menu
@@ -176,9 +176,10 @@ const addRole = () => {
 // Function to add new employee to database
 const addEmployee = () => {
     // Query to select all employee names and roles and id's for both in database
-    const query = "SELECT CONCAT(e.first_name, ' ', e.last_name) AS manager, e.id AS managerId, role.title AS role_title, role.id AS roleId FROM employee e LEFT JOIN role ON e.id = role.id";
+    const query = "SELECT CONCAT(e.first_name, ' ', e.last_name) AS manager, e.id AS managerId, role.title AS role_title, role.id AS roleId FROM employee e LEFT JOIN role ON e.id = role.id UNION SELECT CONCAT(e.first_name, ' ', e.last_name) AS manager, e.id AS managerId, role.title AS role_title, role.id AS roleId FROM employee e RIGHT JOIN role ON e.id = role.id";
     connection.query(query, (err, data) => {
         if (err) throw err;
+        console.table(data);
         inquirer.prompt([
             {
                 name: "first_name",
