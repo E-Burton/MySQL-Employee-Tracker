@@ -179,7 +179,7 @@ const addEmployee = () => {
     const query = "SELECT CONCAT(e.first_name, ' ', e.last_name) AS manager, e.id AS managerId, role.title AS role_title, role.id AS roleId FROM employee e LEFT JOIN role ON e.id = role.id UNION SELECT CONCAT(e.first_name, ' ', e.last_name) AS manager, e.id AS managerId, role.title AS role_title, role.id AS roleId FROM employee e RIGHT JOIN role ON e.id = role.id";
     connection.query(query, (err, data) => {
         if (err) throw err;
-        console.table(data);
+        // console.table(data);
         inquirer.prompt([
             {
                 name: "first_name",
