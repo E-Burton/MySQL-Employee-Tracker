@@ -14,7 +14,10 @@ connection.connect((err) => {
     if (err) throw err;
     console.log(logo({
         name: "Employee Manager",
-        font: "Colossal",
+        // font: "Colossal",
+        // font: "Roman",
+        // font: "Soft",
+        font: "Star Wars",
         logoColor: "bold-white",
     })
     .render());
@@ -70,7 +73,7 @@ const menu = () => {
 
 // Function to view all employess including: title/role, department, salary, and manager
 const viewEmployees = () => {
-    const query = "SELECT e.id, e.first_name, e.last_name, role.title, department.name AS department, role.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN employee m ON e.manager_id = m.id JOIN role ON e.role_id = role.id JOIN department ON department.id = department_id"
+    const query = "SELECT e.id, e.first_name, e.last_name, role.title, department.name AS department, role.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT OUTER JOIN employee m ON e.manager_id = m.id LEFT OUTER JOIN role ON e.role_id = role.id LEFT OUTER JOIN department ON department.id = department_id"
     connection.query(query, (err, data) => {
         if (err) throw err;
         console.table(data); // Displaying employee info in database
@@ -121,7 +124,7 @@ const addDepartment = () => {
 
 // Function to add new role to database
 const addRole = () => {
-    const query = "SELECT name FROM department";
+    const query = "SELECT * FROM department";
     connection.query(query, (err, data) => {
         if (err) throw err;
         inquirer.prompt([
@@ -151,15 +154,17 @@ const addRole = () => {
         ])
         .then(({title, departmentName, salary}) => {
             // Query to find id for selected department for new role
-            const departmentIdQuery = "SELECT id FROM department WHERE ?";
             let department_id;
-            connection.query(departmentIdQuery, {name: departmentName}, (err, data) => {
-                if (err) throw err;
-                department_id = data;
-            })
+            data.forEach(entry => {
+                if(entry.name === departmentName) {
+                    department_id = entry.id;
+                }
+            });
+
             // Inserting new role/title with salary and department id into database
             const query = "INSERT INTO role SET ?";
-            connection.query(query, {title, salary, department_id}, (err) => {
+            const testing = connection.query(query, {title, salary, department_id}, (err) => {
+                console.log(`${testing.sql}`);
                 console.log(`${title} role successfully added!`);
                 if (err) throw err;
                 menu(); // Calling main menu
